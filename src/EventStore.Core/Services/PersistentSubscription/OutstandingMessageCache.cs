@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using EventStore.Core.DataStructures;
 
@@ -13,13 +14,22 @@ namespace EventStore.Core.Services.PersistentSubscription
     public class OutstandingMessageCache
     {
         private readonly Dictionary<Guid, OutstandingMessage> _outstandingRequests;
-        private readonly PairingHeap<RetryableMessage> _byTime;
+        private readonly SortedDictionary<Tuple<DateTime, RetryableMessage>, bool> _byTime;
         private readonly SortedList<int, int> _bySequences;
- 
+
+        public class ByTypeComparer : IComparer<Tuple<DateTime, RetryableMessage>>
+        {
+            public int Compare(Tuple<DateTime, RetryableMessage> x, Tuple<DateTime, RetryableMessage> y)
+            {
+                if(x.Item1 != y.Item1) return x.Item1 < y.Item1 ? -1 : 1;
+                return x.Item2.MessageId.CompareTo(y.Item2.MessageId);
+            }
+        }
+
         public OutstandingMessageCache()
         {
             _outstandingRequests = new Dictionary<Guid, OutstandingMessage>();
-            _byTime = new PairingHeap<RetryableMessage>((x,y) => x.DueTime < y.DueTime);
+            _byTime = new SortedDictionary<Tuple<DateTime, RetryableMessage>, bool>(new ByTypeComparer());
             _bySequences = new SortedList<int, int>();
         }
 
@@ -44,24 +54,30 @@ namespace EventStore.Core.Services.PersistentSubscription
         {
             if (_outstandingRequests.ContainsKey(message.EventId))
                 return StartMessageResult.SkippedDuplicate;
-
+            Console.WriteLine("starting message " + message.EventId);
             _outstandingRequests[message.EventId] = message;
             _bySequences.Add(message.ResolvedEvent.OriginalEventNumber, message.ResolvedEvent.OriginalEventNumber);
-            _byTime.Add(new RetryableMessage(message.EventId, expires));
+            _byTime.Add(new Tuple<DateTime, RetryableMessage>(expires, new RetryableMessage(message.EventId, expires)), false);
 
             return StartMessageResult.Success;
         }
 
         public IEnumerable<OutstandingMessage> GetMessagesExpiringBefore(DateTime time)
         {
-            while (_byTime.Count > 0 && _byTime.FindMin().DueTime <= time)
+            while (_byTime.Count > 0)
             {
-                var item = _byTime.DeleteMin();
+                var item = _byTime.Keys.First();
+                Console.WriteLine("first is " + item.Item1 + " " + item.Item2.MessageId);
+                if(item.Item1 > time) {
+                    Console.WriteLine("breaking");
+                    yield break;
+                }
+                _byTime.Remove(item);
                 OutstandingMessage m;
-                if (_outstandingRequests.TryGetValue(item.MessageId, out m))
+                if (_outstandingRequests.TryGetValue(item.Item2.MessageId, out m))
                 {
-                    yield return _outstandingRequests[item.MessageId];
-                    _outstandingRequests.Remove(item.MessageId);
+                    yield return _outstandingRequests[item.Item2.MessageId];
+                    _outstandingRequests.Remove(item.Item2.MessageId);
                     _bySequences.Remove(m.ResolvedEvent.OriginalEventNumber);
                 }
             }
