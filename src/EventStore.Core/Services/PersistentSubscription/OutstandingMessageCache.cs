@@ -13,7 +13,7 @@ namespace EventStore.Core.Services.PersistentSubscription
 
     public class OutstandingMessageCache
     {
-        private readonly Dictionary<Guid, OutstandingMessage> _outstandingRequests;
+        private readonly Dictionary<Guid, Tuple<DateTime, OutstandingMessage>> _outstandingRequests;
         private readonly SortedDictionary<Tuple<DateTime, RetryableMessage>, bool> _byTime;
         private readonly SortedList<int, int> _bySequences;
 
@@ -21,14 +21,17 @@ namespace EventStore.Core.Services.PersistentSubscription
         {
             public int Compare(Tuple<DateTime, RetryableMessage> x, Tuple<DateTime, RetryableMessage> y)
             {
-                if(x.Item1 != y.Item1) return x.Item1 < y.Item1 ? -1 : 1;
-                return x.Item2.MessageId.CompareTo(y.Item2.MessageId);
+                if(x.Item1 != y.Item1) {
+                    return x.Item1 < y.Item1 ? -1 : 1;
+                }
+                var q = y.Item2.MessageId.CompareTo(x.Item2.MessageId);
+                return q;
             }
         }
 
         public OutstandingMessageCache()
         {
-            _outstandingRequests = new Dictionary<Guid, OutstandingMessage>();
+            _outstandingRequests = new Dictionary<Guid, Tuple<DateTime, OutstandingMessage>>();
             _byTime = new SortedDictionary<Tuple<DateTime, RetryableMessage>, bool>(new ByTypeComparer());
             _bySequences = new SortedList<int, int>();
         }
@@ -37,11 +40,12 @@ namespace EventStore.Core.Services.PersistentSubscription
 
         public void Remove(Guid messageId)
         {
-            OutstandingMessage m;
+            Tuple<DateTime, OutstandingMessage> m;
             if (_outstandingRequests.TryGetValue(messageId, out m))
             {
+                _byTime.Remove(new Tuple<DateTime,RetryableMessage>(m.Item1, new RetryableMessage(m.Item2.EventId, m.Item1)));
                 _outstandingRequests.Remove(messageId);
-                _bySequences.Remove(m.ResolvedEvent.OriginalEventNumber);
+                _bySequences.Remove(m.Item2.ResolvedEvent.OriginalEventNumber);
             }
         }
 
@@ -54,8 +58,7 @@ namespace EventStore.Core.Services.PersistentSubscription
         {
             if (_outstandingRequests.ContainsKey(message.EventId))
                 return StartMessageResult.SkippedDuplicate;
-            Console.WriteLine("starting message " + message.EventId);
-            _outstandingRequests[message.EventId] = message;
+            _outstandingRequests[message.EventId] = new Tuple<DateTime, OutstandingMessage>(expires, message);
             _bySequences.Add(message.ResolvedEvent.OriginalEventNumber, message.ResolvedEvent.OriginalEventNumber);
             _byTime.Add(new Tuple<DateTime, RetryableMessage>(expires, new RetryableMessage(message.EventId, expires)), false);
 
@@ -67,20 +70,22 @@ namespace EventStore.Core.Services.PersistentSubscription
             while (_byTime.Count > 0)
             {
                 var item = _byTime.Keys.First();
-                Console.WriteLine("first is " + item.Item1 + " " + item.Item2.MessageId);
                 if(item.Item1 > time) {
-                    Console.WriteLine("breaking");
                     yield break;
                 }
                 _byTime.Remove(item);
-                OutstandingMessage m;
+                Tuple<DateTime, OutstandingMessage> m;
                 if (_outstandingRequests.TryGetValue(item.Item2.MessageId, out m))
                 {
-                    yield return _outstandingRequests[item.Item2.MessageId];
+                    yield return _outstandingRequests[item.Item2.MessageId].Item2;
                     _outstandingRequests.Remove(item.Item2.MessageId);
-                    _bySequences.Remove(m.ResolvedEvent.OriginalEventNumber);
+                    _bySequences.Remove(m.Item2.ResolvedEvent.OriginalEventNumber);
                 }
             }
+        }
+
+        public IEnumerable<Tuple<DateTime,RetryableMessage>> WaitingTimeMessages() {
+            return _byTime.Keys;
         }
 
         public int GetLowestPosition()
@@ -92,7 +97,13 @@ namespace EventStore.Core.Services.PersistentSubscription
 
         public bool GetMessageById(Guid id, out OutstandingMessage outstandingMessage)
         {
-            return _outstandingRequests.TryGetValue(id, out outstandingMessage);
+            outstandingMessage = new OutstandingMessage();
+            Tuple<DateTime, OutstandingMessage> m;
+            if(_outstandingRequests.TryGetValue(id, out m)) {
+                outstandingMessage = m.Item2;
+                return true;
+            }
+            return false;
         }
     }
 }
