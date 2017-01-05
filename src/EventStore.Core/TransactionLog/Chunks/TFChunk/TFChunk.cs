@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
 using EventStore.Common.Log;
-using EventStore.Common.Streams;
 using EventStore.Common.Utils;
 using EventStore.Core.Exceptions;
 using EventStore.Core.Settings;
@@ -379,16 +378,11 @@ namespace EventStore.Core.TransactionLog.Chunks.TFChunk
                 throw new InvalidOperationException("You can't verify hash of not-completed TFChunk.");
 
             Log.Trace("Verifying hash for TFChunk '{0}'...", _filename);
-#if  __MonoCS__
             using (var reader = AcquireReader())
             {
                 reader.Stream.Seek(0, SeekOrigin.Begin);
                 var stream = reader.Stream;
-#else
-            using (var reader = UnbufferedFileReadStream.Open(_filename))
-            {
-                var stream = reader;
-#endif
+                //NOTE CODE HERE DOESNT EXIT IN UNBUFFERED SO JUST REMOVING IT
                 var footer = _chunkFooter;
 
                 byte[] hash;
