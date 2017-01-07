@@ -182,12 +182,12 @@ namespace EventStore.Core.Services.PersistentSubscription
                                     message.LiveBufferSize,
                                     message.BufferSize,
                                     message.ReadBatchSize,
-                                    msgTimeout,
+                                    checkPointAfter,
                                     message.MinCheckPointCount,
                                     message.MaxCheckPointCount,
                                     message.MaxSubscriberCount,
                                     message.NamedConsumerStrategy,
-                                    checkPointAfter
+                                    msgTimeout
                                     );
             Log.Debug("New persistent subscription {0}.", message.GroupName);
             _config.Updated = DateTime.Now;
