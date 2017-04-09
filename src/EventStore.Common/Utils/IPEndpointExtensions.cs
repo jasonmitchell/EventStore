@@ -7,7 +7,7 @@ namespace EventStore.Common.Utils
     {
         public static string ToHttpUrl(this IPEndPoint endPoint, string rawUrl = null)
         {
-            return string.Format("http://{0}:{1}/{2}",
+            return string.Format("https://{0}:{1}/{2}",
                                  endPoint.Address,
                                  endPoint.Port,
                                  rawUrl != null ? rawUrl.TrimStart('/') : string.Empty);
@@ -15,7 +15,7 @@ namespace EventStore.Common.Utils
 
         public static string ToHttpUrl(this IPEndPoint endPoint, string formatString, params object[] args)
         {
-            return string.Format("http://{0}:{1}/{2}",
+            return string.Format("https://{0}:{1}/{2}",
                                  endPoint.Address,
                                  endPoint.Port,
                                  string.Format(formatString.TrimStart('/'), args));
