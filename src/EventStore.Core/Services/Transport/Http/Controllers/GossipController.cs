@@ -24,12 +24,14 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
         private readonly IPublisher _networkSendQueue;
         private readonly HttpAsyncClient _client;
         private readonly TimeSpan _gossipTimeout;
-        
-        public GossipController(IPublisher publisher, IPublisher networkSendQueue, TimeSpan gossipTimeout)
+        private readonly bool _useHttps;
+
+        public GossipController(IPublisher publisher, IPublisher networkSendQueue, TimeSpan gossipTimeout, bool useHttps)
             : base(publisher)
         {
             _networkSendQueue = networkSendQueue;
             _gossipTimeout = gossipTimeout;
+            _useHttps = useHttps;
             _client = new HttpAsyncClient(_gossipTimeout);
         }
 
@@ -52,7 +54,7 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(message, "endPoint");
 
-            var url = endPoint.ToHttpUrl("/gossip");
+            var url = _useHttps ? endPoint.ToHttpsUrl("/gossip") : endPoint.ToHttpUrl("/gossip");
             _client.Post(
                 url,
                 Codec.Json.To(new ClusterInfoDto(message.ClusterInfo, message.ServerEndPoint)),

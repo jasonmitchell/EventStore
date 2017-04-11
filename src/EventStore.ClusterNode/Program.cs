@@ -266,6 +266,8 @@ namespace EventStore.ClusterNode
                 builder.NoStatsOnPublicInterface();
             if(!options.GossipOnExt)
                 builder.NoGossipOnPublicInterface();
+            if (options.GossipOverHttps)
+                builder.EnableGossipOverHttps();
             if(options.SkipDbVerify)
                 builder.DoNotVerifyDbHashes();
             if(options.AlwaysKeepScavenged)

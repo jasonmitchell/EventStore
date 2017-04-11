@@ -95,6 +95,8 @@ namespace EventStore.ClusterNode
         public bool StatsOnExt { get; set; }
         [ArgDescription(Opts.GossipOnExtDescr, Opts.InterfacesGroup)]
         public bool GossipOnExt { get; set; }
+        [ArgDescription(Opts.GossipOverHttpsDescr, Opts.InterfacesGroup)]
+        public bool GossipOverHttps { get; set; }
         [ArgDescription(Opts.DisableScavengeMergeDescr, Opts.DbGroup)]
         public bool DisableScavengeMerging { get; set; }
         [ArgDescription(Opts.ScavengeHistoryMaxAgeDescr, Opts.DbGroup)]
@@ -308,6 +310,7 @@ namespace EventStore.ClusterNode
             DisableScavengeMerging = Opts.DisableScavengeMergeDefault;
             ScavengeHistoryMaxAge = Opts.ScavengeHistoryMaxAgeDefault;
             GossipOnExt = Opts.GossipOnExtDefault;
+            GossipOverHttps = Opts.GossipOverHttpsDefault;
             StatsOnExt = Opts.StatsOnExtDefault;
             AdminOnExt = Opts.AdminOnExtDefault;
             GossipIntervalMs = Opts.GossipIntervalMsDefault;

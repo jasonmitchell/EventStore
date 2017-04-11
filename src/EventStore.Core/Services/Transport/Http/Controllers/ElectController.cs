@@ -25,9 +25,11 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
         private static readonly ICodec[] SupportedCodecs = new ICodec[] {Codec.Json, Codec.Xml};
         private TimeSpan _operationTimeout;
         private readonly HttpAsyncClient _client;
+        private readonly bool _useHttps;
 
-        public ElectController(IPublisher publisher): base(publisher)
+        public ElectController(IPublisher publisher, bool useHttps): base(publisher)
         {
+            _useHttps = useHttps;
             _operationTimeout = TimeSpan.FromMilliseconds(2000); //TODO make these configurable
             _client = new HttpAsyncClient(_operationTimeout);
         }
@@ -57,7 +59,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/viewchange"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/viewchange") : endPoint.ToHttpUrl("/elections/viewchange");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.ViewChangeDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},
@@ -69,7 +72,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/viewchangeproof"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/viewchangeproof") : endPoint.ToHttpUrl("/elections/viewchangeproof");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.ViewChangeProofDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},
@@ -81,7 +85,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/prepare"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/prepare") : endPoint.ToHttpUrl("/elections/prepare");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.PrepareDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},
@@ -93,7 +98,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/prepareok"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/prepareok") : endPoint.ToHttpUrl("/elections/prepareok");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.PrepareOkDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},
@@ -105,7 +111,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/proposal"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/proposal") : endPoint.ToHttpUrl("/elections/proposal");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.ProposalDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},
@@ -117,7 +124,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             Ensure.NotNull(message, "message");
             Ensure.NotNull(endPoint, "endPoint");
 
-            _client.Post(endPoint.ToHttpUrl("/elections/accept"),
+            var url = _useHttps ? endPoint.ToHttpsUrl("/elections/accept") : endPoint.ToHttpUrl("/elections/accept");
+            _client.Post(url,
                         Codec.Json.To(new ElectionMessageDto.AcceptDto(message)),
                         Codec.Json.ContentType,
                         r => {/*ignore*/},

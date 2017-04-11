@@ -306,9 +306,9 @@ namespace EventStore.Core
             var histogramController = new HistogramController();
             var statController = new StatController(monitoringQueue, _workersHandler);
             var atomController = new AtomController(httpSendService, _mainQueue, _workersHandler, vNodeSettings.DisableHTTPCaching);
-            var gossipController = new GossipController(_mainQueue, _workersHandler, vNodeSettings.GossipTimeout);
+            var gossipController = new GossipController(_mainQueue, _workersHandler, vNodeSettings.GossipTimeout, vNodeSettings.GossipOverHttps);
             var persistentSubscriptionController = new PersistentSubscriptionController(httpSendService, _mainQueue, _workersHandler);
-            var electController = new ElectController(_mainQueue);
+            var electController = new ElectController(_mainQueue, vNodeSettings.GossipOverHttps);
 
             // HTTP SENDERS
             gossipController.SubscribeSenders(httpPipe);

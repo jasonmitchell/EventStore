@@ -207,6 +207,9 @@ namespace EventStore.Core.Util
         public const string GossipOnExtDescr = "Whether or not to accept gossip requests on the external HTTP endpoint";
         public const bool GossipOnExtDefault = true;
 
+        public const string GossipOverHttpsDescr = "Whether or not to use HTTPS for gossip requests";
+        public const bool GossipOverHttpsDefault = false;
+
         public const string StatsOnExtDescr = "Whether or not to accept statistics requests on the external HTTP endpoint, needed if you use admin ui";
         public const bool StatsOnExtDefault = true;
 
