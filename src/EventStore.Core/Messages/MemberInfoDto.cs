@@ -25,6 +25,8 @@ namespace EventStore.Core.Messages
 
         public string ExternalHttpIp { get; set; }
         public int ExternalHttpPort { get; set; }
+
+        public bool UseHttps { get; set; }
         
         public long LastCommitPosition { get; set; }
         public long WriterCheckpoint { get; set; }
@@ -62,6 +64,8 @@ namespace EventStore.Core.Messages
             ExternalHttpIp = member.ExternalHttpEndPoint.Address.ToString();
             ExternalHttpPort = member.ExternalHttpEndPoint.Port;
 
+            UseHttps = member.UseHttps;
+
             LastCommitPosition = member.LastCommitPosition;
             WriterCheckpoint = member.WriterCheckpoint;
             ChaserCheckpoint = member.ChaserCheckpoint;
@@ -78,13 +82,13 @@ namespace EventStore.Core.Messages
             return string.Format("InstanceId: {0:B}, TimeStamp: {1:yyyy-MM-dd HH:mm:ss.fff}, State: {2}, IsAlive: {3}, "
                                  + "InternalTcpIp: {4}, InternalTcpPort: {5}, InternalSecureTcpPort: {6}, "
                                  + "ExternalTcpIp: {7}, ExternalTcpPort: {8}, ExternalSecureTcpPort: {9}, " 
-                                 + "InternalHttpIp: {10}, InternalHttpPort: {11}, ExternalHttpIp: {12}, ExternalHttpPort: {13}, "
-                                 + "LastCommitPosition: {14}, WriterCheckpoint: {15}, ChaserCheckpoint: {16}, "
-                                 + "EpochPosition: {17}, EpochNumber: {18}, EpochId: {19:B}, NodePriority: {20}",
+                                 + "InternalHttpIp: {10}, InternalHttpPort: {11}, ExternalHttpIp: {12}, ExternalHttpPort: {13}, UseHttps: {14},"
+                                 + "LastCommitPosition: {15}, WriterCheckpoint: {16}, ChaserCheckpoint: {17}, "
+                                 + "EpochPosition: {18}, EpochNumber: {19}, EpochId: {20:B}, NodePriority: {21}",
                                  InstanceId, TimeStamp, State, IsAlive,
                                  InternalTcpIp, InternalTcpPort, InternalSecureTcpPort,
                                  ExternalTcpIp, ExternalTcpPort, ExternalSecureTcpPort,
-                                 InternalHttpIp, InternalHttpPort, ExternalHttpIp, ExternalHttpPort, 
+                                 InternalHttpIp, InternalHttpPort, ExternalHttpIp, ExternalHttpPort, UseHttps,
                                  LastCommitPosition, WriterCheckpoint, ChaserCheckpoint,
                                  EpochPosition, EpochNumber, EpochId, NodePriority);
         }

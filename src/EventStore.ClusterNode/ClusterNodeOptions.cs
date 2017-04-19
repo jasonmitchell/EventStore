@@ -46,6 +46,8 @@ namespace EventStore.ClusterNode
         public int ExtSecureTcpPortAdvertiseAs { get; set; }
         [ArgDescription(Opts.ExternalSecureTcpPortDescr, Opts.InterfacesGroup)]
         public int ExtSecureTcpPort { get; set; }
+        [ArgDescription(Opts.UseHttpsDescr, Opts.InterfacesGroup)]
+        public bool UseHttps { get; set; }
 
         [ArgDescription(Opts.ExternalIpAdvertiseAsDescr, Opts.InterfacesGroup)]
         public IPAddress ExtIpAdvertiseAs { get; set; }
@@ -95,8 +97,6 @@ namespace EventStore.ClusterNode
         public bool StatsOnExt { get; set; }
         [ArgDescription(Opts.GossipOnExtDescr, Opts.InterfacesGroup)]
         public bool GossipOnExt { get; set; }
-        [ArgDescription(Opts.GossipOverHttpsDescr, Opts.InterfacesGroup)]
-        public bool GossipOverHttps { get; set; }
         [ArgDescription(Opts.DisableScavengeMergeDescr, Opts.DbGroup)]
         public bool DisableScavengeMerging { get; set; }
         [ArgDescription(Opts.ScavengeHistoryMaxAgeDescr, Opts.DbGroup)]
@@ -310,7 +310,7 @@ namespace EventStore.ClusterNode
             DisableScavengeMerging = Opts.DisableScavengeMergeDefault;
             ScavengeHistoryMaxAge = Opts.ScavengeHistoryMaxAgeDefault;
             GossipOnExt = Opts.GossipOnExtDefault;
-            GossipOverHttps = Opts.GossipOverHttpsDefault;
+            UseHttps = Opts.UseHttpsDefault;
             StatsOnExt = Opts.StatsOnExtDefault;
             AdminOnExt = Opts.AdminOnExtDefault;
             GossipIntervalMs = Opts.GossipIntervalMsDefault;

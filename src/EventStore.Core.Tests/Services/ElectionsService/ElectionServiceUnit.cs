@@ -69,7 +69,8 @@ namespace EventStore.Core.Tests.Services.ElectionsService
                                                clusterSettings.Self.NodeInfo.ExternalTcp, 
                                                clusterSettings.Self.NodeInfo.ExternalSecureTcp, 
                                                clusterSettings.Self.NodeInfo.InternalHttp,
-                                               clusterSettings.Self.NodeInfo.ExternalHttp, 
+                                               clusterSettings.Self.NodeInfo.ExternalHttp,
+                                               false,
                                                LastCommitPosition, WriterCheckpoint, ChaserCheckpoint,
                                                -1,
                                                -1,
@@ -85,6 +86,7 @@ namespace EventStore.Core.Tests.Services.ElectionsService
                                                      x.NodeInfo.ExternalSecureTcp, 
                                                      x.NodeInfo.InternalHttp,
                                                      x.NodeInfo.ExternalHttp, 
+                                                     false,
                                                      LastCommitPosition, WriterCheckpoint, ChaserCheckpoint,
                                                      -1,
                                                      -1,
@@ -181,7 +183,7 @@ namespace EventStore.Core.Tests.Services.ElectionsService
                         : MemberInfo.ForVNode(x.InstanceId, x.TimeStamp, x.State, x.IsAlive,
                                               x.InternalTcpEndPoint, x.InternalSecureTcpEndPoint,
                                               x.ExternalTcpEndPoint, x.ExternalSecureTcpEndPoint,
-                                              x.InternalHttpEndPoint, x.ExternalHttpEndPoint, 
+                                              x.InternalHttpEndPoint, x.ExternalHttpEndPoint, false,
                                               x.LastCommitPosition, x.WriterCheckpoint, x.ChaserCheckpoint,
                                               x.EpochPosition, x.EpochNumber, x.EpochId, x.NodePriority));
         }

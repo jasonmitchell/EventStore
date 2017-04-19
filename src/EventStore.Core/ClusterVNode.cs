@@ -306,9 +306,9 @@ namespace EventStore.Core
             var histogramController = new HistogramController();
             var statController = new StatController(monitoringQueue, _workersHandler);
             var atomController = new AtomController(httpSendService, _mainQueue, _workersHandler, vNodeSettings.DisableHTTPCaching);
-            var gossipController = new GossipController(_mainQueue, _workersHandler, vNodeSettings.GossipTimeout, vNodeSettings.GossipOverHttps);
+            var gossipController = new GossipController(_mainQueue, _workersHandler, vNodeSettings.GossipTimeout, vNodeSettings.NodeInfo.UseHttps);
             var persistentSubscriptionController = new PersistentSubscriptionController(httpSendService, _mainQueue, _workersHandler);
-            var electController = new ElectController(_mainQueue, vNodeSettings.GossipOverHttps);
+            var electController = new ElectController(_mainQueue, vNodeSettings.NodeInfo.UseHttps);
 
             // HTTP SENDERS
             gossipController.SubscribeSenders(httpPipe);
@@ -497,7 +497,8 @@ namespace EventStore.Core
                                            vNodeSettings.GossipAdvertiseInfo.ExternalTcp,
                                            vNodeSettings.GossipAdvertiseInfo.ExternalSecureTcp,
                                            vNodeSettings.GossipAdvertiseInfo.InternalHttp,
-                                           vNodeSettings.GossipAdvertiseInfo.ExternalHttp);
+                                           vNodeSettings.GossipAdvertiseInfo.ExternalHttp,
+                                           vNodeSettings.NodeInfo.UseHttps);
             if(!isSingleNode) {
             // MASTER REPLICATION
                 var masterReplicationService = new MasterReplicationService(_mainQueue, gossipInfo.InstanceId, db, _workersHandler,

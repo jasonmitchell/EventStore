@@ -21,6 +21,7 @@ namespace EventStore.Core.Cluster
         public readonly IPEndPoint ExternalSecureTcpEndPoint;
         public readonly IPEndPoint InternalHttpEndPoint;
         public readonly IPEndPoint ExternalHttpEndPoint;
+        public readonly bool UseHttps;
 
         public readonly long LastCommitPosition;
         public readonly long WriterCheckpoint;
@@ -36,7 +37,7 @@ namespace EventStore.Core.Cluster
         {
             return new MemberInfo(instanceId, timeStamp, VNodeState.Manager, true, 
                                   internalHttpEndPoint, null, externalHttpEndPoint, null, 
-                                  internalHttpEndPoint, externalHttpEndPoint, 
+                                  internalHttpEndPoint, externalHttpEndPoint, false,
                                   -1, -1, -1, -1, -1, Guid.Empty, 0);
         }
 
@@ -50,6 +51,7 @@ namespace EventStore.Core.Cluster
                                           IPEndPoint externalSecureTcpEndPoint,
                                           IPEndPoint internalHttpEndPoint,
                                           IPEndPoint externalHttpEndPoint,
+                                          bool useHttps,
                                           long lastCommitPosition,
                                           long writerCheckpoint,
                                           long chaserCheckpoint,
@@ -63,7 +65,7 @@ namespace EventStore.Core.Cluster
             return new MemberInfo(instanceId, timeStamp, state, isAlive,
                                   internalTcpEndPoint, internalSecureTcpEndPoint,
                                   externalTcpEndPoint, externalSecureTcpEndPoint,
-                                  internalHttpEndPoint, externalHttpEndPoint,
+                                  internalHttpEndPoint, externalHttpEndPoint, useHttps,
                                   lastCommitPosition, writerCheckpoint, chaserCheckpoint,
                                   epochPosition, epochNumber, epochId, nodePriority);
         }
@@ -71,7 +73,7 @@ namespace EventStore.Core.Cluster
         private MemberInfo(Guid instanceId, DateTime timeStamp, VNodeState state, bool isAlive, 
                            IPEndPoint internalTcpEndPoint, IPEndPoint internalSecureTcpEndPoint, 
                            IPEndPoint externalTcpEndPoint, IPEndPoint externalSecureTcpEndPoint, 
-                           IPEndPoint internalHttpEndPoint, IPEndPoint externalHttpEndPoint, 
+                           IPEndPoint internalHttpEndPoint, IPEndPoint externalHttpEndPoint,  bool useHttps,
                            long lastCommitPosition, long writerCheckpoint, long chaserCheckpoint,
                            long epochPosition, int epochNumber, Guid epochId, int nodePriority)
         {
@@ -92,6 +94,7 @@ namespace EventStore.Core.Cluster
             ExternalSecureTcpEndPoint = externalSecureTcpEndPoint;
             InternalHttpEndPoint = internalHttpEndPoint;
             ExternalHttpEndPoint = externalHttpEndPoint;
+            UseHttps = useHttps;
             
             LastCommitPosition = lastCommitPosition;
             WriterCheckpoint = writerCheckpoint;
@@ -118,6 +121,7 @@ namespace EventStore.Core.Cluster
             ExternalSecureTcpEndPoint = dto.ExternalSecureTcpPort > 0 ? new IPEndPoint(externalTcpIp, dto.ExternalSecureTcpPort) : null;
             InternalHttpEndPoint = new IPEndPoint(IPAddress.Parse(dto.InternalHttpIp), dto.InternalHttpPort);
             ExternalHttpEndPoint = new IPEndPoint(IPAddress.Parse(dto.ExternalHttpIp), dto.ExternalHttpPort);
+            UseHttps = dto.UseHttps;
             LastCommitPosition = dto.LastCommitPosition;
             WriterCheckpoint = dto.WriterCheckpoint;
             ChaserCheckpoint = dto.ChaserCheckpoint;
@@ -155,6 +159,7 @@ namespace EventStore.Core.Cluster
                                   ExternalSecureTcpEndPoint,
                                   InternalHttpEndPoint,
                                   ExternalHttpEndPoint,
+                                  UseHttps,
                                   lastCommitPosition ?? LastCommitPosition,
                                   writerCheckpoint ?? WriterCheckpoint,
                                   chaserCheckpoint ?? ChaserCheckpoint,
@@ -194,6 +199,7 @@ namespace EventStore.Core.Cluster
                    && Equals(other.ExternalSecureTcpEndPoint, ExternalSecureTcpEndPoint)
                    && Equals(other.InternalHttpEndPoint, InternalHttpEndPoint)
                    && Equals(other.ExternalHttpEndPoint, ExternalHttpEndPoint)
+                   && other.UseHttps == UseHttps
                    && other.EpochPosition == EpochPosition
                    && other.EpochNumber == EpochNumber
                    && other.EpochId == EpochId
@@ -221,6 +227,7 @@ namespace EventStore.Core.Cluster
                 result = (result*397) ^ (ExternalSecureTcpEndPoint != null ? ExternalSecureTcpEndPoint.GetHashCode() : 0);
                 result = (result*397) ^ InternalHttpEndPoint.GetHashCode();
                 result = (result*397) ^ ExternalHttpEndPoint.GetHashCode();
+                result = (result*397) ^ UseHttps.GetHashCode();
                 result = (result*397) ^ EpochPosition.GetHashCode();
                 result = (result*397) ^ EpochNumber.GetHashCode();
                 result = (result*397) ^ EpochId.GetHashCode();

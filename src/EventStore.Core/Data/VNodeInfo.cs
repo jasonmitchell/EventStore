@@ -14,11 +14,12 @@ namespace EventStore.Core.Data
         public readonly IPEndPoint ExternalSecureTcp;
         public readonly IPEndPoint InternalHttp;
         public readonly IPEndPoint ExternalHttp;
+        public readonly bool UseHttps;
 
         public VNodeInfo(Guid instanceId, int debugIndex,
                          IPEndPoint internalTcp, IPEndPoint internalSecureTcp,
                          IPEndPoint externalTcp, IPEndPoint externalSecureTcp,
-                         IPEndPoint internalHttp, IPEndPoint externalHttp)
+                         IPEndPoint internalHttp, IPEndPoint externalHttp, bool useHttps)
         {
             Ensure.NotEmptyGuid(instanceId, "instanceId");
             Ensure.NotNull(internalTcp, "internalTcp");
@@ -34,6 +35,7 @@ namespace EventStore.Core.Data
             ExternalSecureTcp = externalSecureTcp;
             InternalHttp = internalHttp;
             ExternalHttp = externalHttp;
+            UseHttps = useHttps;
         }
 
         public bool Is(IPEndPoint endPoint)
@@ -50,14 +52,15 @@ namespace EventStore.Core.Data
         public override string ToString()
         {
             return string.Format("InstanceId: {0:B}, InternalTcp: {1}, InternalSecureTcp: {2}, " +
-                                 "ExternalTcp: {3}, ExternalSecureTcp: {4}, InternalHttp: {5}, ExternalHttp: {6}",
+                                 "ExternalTcp: {3}, ExternalSecureTcp: {4}, InternalHttp: {5}, ExternalHttp: {6}, UseHttps: {7}",
                                  InstanceId,
                                  InternalTcp,
                                  InternalSecureTcp,
                                  ExternalTcp,
                                  ExternalSecureTcp,
                                  InternalHttp,
-                                 ExternalHttp);
+                                 ExternalHttp,
+                                 UseHttps);
         }
     }
 }

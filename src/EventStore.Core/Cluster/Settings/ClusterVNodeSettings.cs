@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -73,7 +72,6 @@ namespace EventStore.Core.Cluster.Settings
         public readonly bool AlwaysKeepScavenged;
 
         public readonly bool GossipOnSingleNode;
-        public readonly bool GossipOverHttps;
 
         public ClusterVNodeSettings(Guid instanceId, int debugIndex,
                                     IPEndPoint internalTcpEndPoint,
@@ -132,7 +130,7 @@ namespace EventStore.Core.Cluster.Settings
                                     int readerThreadsCount = 4,
                                     bool alwaysKeepScavenged = false,
                                     bool gossipOnSingleNode = false,
-                                    bool gossipOverHttps = false)
+                                    bool useHttps = false)
         {
             Ensure.NotEmptyGuid(instanceId, "instanceId");
             Ensure.NotNull(internalTcpEndPoint, "internalTcpEndPoint");
@@ -160,7 +158,7 @@ namespace EventStore.Core.Cluster.Settings
             NodeInfo = new VNodeInfo(instanceId, debugIndex,
                                      internalTcpEndPoint, internalSecureTcpEndPoint,
                                      externalTcpEndPoint, externalSecureTcpEndPoint,
-                                     internalHttpEndPoint, externalHttpEndPoint);
+                                     internalHttpEndPoint, externalHttpEndPoint, useHttps);
             GossipAdvertiseInfo = gossipAdvertiseInfo;
             IntHttpPrefixes = intHttpPrefixes;
             ExtHttpPrefixes = extHttpPrefixes;
@@ -176,7 +174,6 @@ namespace EventStore.Core.Cluster.Settings
             ClusterDns = clusterDns;
             GossipSeeds = gossipSeeds;
             GossipOnSingleNode = gossipOnSingleNode;
-            GossipOverHttps = gossipOverHttps;
 
             ClusterNodeCount = clusterNodeCount;
             MinFlushDelay = minFlushDelay;

@@ -82,7 +82,7 @@ namespace EventStore.Core
         protected bool _adminOnPublic;
         protected bool _statsOnPublic;
         protected bool _gossipOnPublic;
-        protected bool _gossipOverHttps;
+        protected bool _useHttps;
         protected TimeSpan _gossipInterval;
         protected TimeSpan _gossipAllowedTimeDifference;
         protected TimeSpan _gossipTimeout;
@@ -588,9 +588,9 @@ namespace EventStore.Core
         /// Enables gossip requests over HTTPS
         /// </summary>
         /// <returns>A <see cref="VNodeBuilder"/> with the options set</returns>
-        public VNodeBuilder EnableGossipOverHttps()
+        public VNodeBuilder UseHttps()
         {
-            _gossipOverHttps = true;
+            _useHttps = true;
             return this;
         }
 
@@ -1334,7 +1334,7 @@ namespace EventStore.Core
                     _readerThreadsCount,
                     _alwaysKeepScavenged,
                     _gossipOnSingleNode,
-                    _gossipOverHttps);
+                    _useHttps);
             var infoController = new InfoController(options, _projectionType);
 
             _log.Info("{0,-25} {1}", "INSTANCE ID:", _vNodeSettings.NodeInfo.InstanceId);
