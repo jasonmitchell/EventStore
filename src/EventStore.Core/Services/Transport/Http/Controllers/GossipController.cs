@@ -32,7 +32,7 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             _networkSendQueue = networkSendQueue;
             _gossipTimeout = gossipTimeout;
             _useHttps = useHttps;
-            _client = new HttpAsyncClient(_gossipTimeout);
+            _client = new HttpAsyncClient(_gossipTimeout, Log);
         }
 
         protected override void SubscribeCore(IHttpService service)

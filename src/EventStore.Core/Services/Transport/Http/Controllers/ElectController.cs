@@ -31,7 +31,7 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
         {
             _useHttps = useHttps;
             _operationTimeout = TimeSpan.FromMilliseconds(2000); //TODO make these configurable
-            _client = new HttpAsyncClient(_operationTimeout);
+            _client = new HttpAsyncClient(_operationTimeout, Log);
         }
 
         protected override void SubscribeCore(IHttpService service)

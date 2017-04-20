@@ -6,12 +6,14 @@ using EventStore.Common.Utils;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using EventStore.Common.Log;
 
 namespace EventStore.Transport.Http.Client
 {
     public class HttpAsyncClient : IHttpClient
     {
-        private HttpClient _client;
+        private readonly HttpClient _client;
+        private readonly ILogger _log;
 
         static HttpAsyncClient()
         {
@@ -19,9 +21,11 @@ namespace EventStore.Transport.Http.Client
             ServicePointManager.DefaultConnectionLimit = 500;
         }
 
-        public HttpAsyncClient(TimeSpan timeout) {
+        public HttpAsyncClient(TimeSpan timeout, ILogger log)
+        {
             _client = new HttpClient();
             _client.Timeout = timeout;
+            _log = log;
         }
 
         public void Get(string url, Action<HttpResponse> onSuccess, Action<Exception> onException)
@@ -139,10 +143,23 @@ namespace EventStore.Transport.Http.Client
                     var responseMsg = task.Result;
                     state.Response = new HttpResponse(responseMsg);
                     responseMsg.Content.ReadAsStringAsync()
-                            .ContinueWith(ResponseRead(state));
+                               .ContinueWith(ResponseRead(state));
                 }
-                catch (Exception ex)
+                catch (AggregateException ex)
                 {
+                    ex.Handle(x =>
+                    {
+                        if (x is HttpRequestException)
+                        {
+                            var error = x.InnerException != null ? x.InnerException.Message : x.Message;
+                            _log.ErrorException(x, "Error isssuing request to {0}.  Message: {1}", state.Request.RequestUri, error);
+
+                            return true;
+                        }
+
+                        return false;
+                    });
+
                     state.Dispose();
                     state.OnError(ex);
                 }

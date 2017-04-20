@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading;
+using EventStore.Common.Log;
 using EventStore.Common.Utils;
 using EventStore.Core.Bus;
 using EventStore.Core.Messages;
 using EventStore.Core.Messaging;
 using EventStore.Core.Services.Transport.Http;
 using EventStore.Core.Services.Transport.Http.Authentication;
+using EventStore.Core.Services.Transport.Http.Controllers;
 using EventStore.Transport.Http;
 using EventStore.Transport.Http.Client;
 
@@ -59,7 +61,7 @@ namespace EventStore.Core.Tests.Services.Transport.Http
                 _service = new HttpService(ServiceAccessibility.Private, _bus, new NaiveUriRouter(),
                                            _multiQueuedHandler, false, null, 0, _serverEndPoint.ToHttpUrl());
                 HttpService.CreateAndSubscribePipeline(pipelineBus, httpAuthenticationProviders);
-                _client = new HttpAsyncClient(_timeout);
+                _client = new HttpAsyncClient(_timeout, LogManager.GetLoggerFor<PortableServer>());
             }
 
             HttpBootstrap.Subscribe(_bus, _service);

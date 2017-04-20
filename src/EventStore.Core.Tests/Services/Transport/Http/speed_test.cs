@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using EventStore.Common.Log;
 using EventStore.Common.Utils;
 using EventStore.Core.Bus;
 using EventStore.Core.Messages;
@@ -151,7 +152,7 @@ namespace EventStore.Core.Tests.Services.Transport.Http
             var sw = Stopwatch.StartNew();
 
             var timeout =TimeSpan.FromMilliseconds(10000);
-            var httpClient = new HttpAsyncClient(timeout);
+            var httpClient = new HttpAsyncClient(timeout, LogManager.GetLoggerFor<speed_test>());
             for (int i = 0; i < iterations; ++i)
             {
                 var route = fakeController.BoundRoutes[rnd.Next(0, fakeController.BoundRoutes.Count)];
