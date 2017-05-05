@@ -14,21 +14,22 @@ namespace EventStore.ClientAPI.Projections
     public class ProjectionsManager
     {
         private readonly ProjectionsClient _client;
-        private readonly IPEndPoint _httpEndPoint;
+        private readonly HttpEndPoint _httpEndPoint;
 
         /// <summary>
         /// Creates a new instance of <see cref="ProjectionsManager"/>.
         /// </summary>
         /// <param name="log">An instance of <see cref="ILogger"/> to use for logging.</param>
-        /// <param name="httpEndPoint">HTTP endpoint of an Event Store server.</param>
-        /// <param name="operationTimeout"></param>
-        public ProjectionsManager(ILogger log, IPEndPoint httpEndPoint, TimeSpan operationTimeout)
+        /// <param name="endPoint">HTTP endpoint of an Event Store server.</param>
+        /// <param name="operationTimeout">Timeout of projection API operations.</param>
+        /// <param name="useHttps">Whether to make requests over HTTPS.  Defaults to false.</param>
+        public ProjectionsManager(ILogger log, IPEndPoint endPoint, TimeSpan operationTimeout, bool useHttps = false)
         {
             Ensure.NotNull(log, "log");
-            Ensure.NotNull(httpEndPoint, "httpEndPoint");
+            Ensure.NotNull(endPoint, "endPoint");
 
             _client = new ProjectionsClient(log, operationTimeout);
-            _httpEndPoint = httpEndPoint;
+            _httpEndPoint = new HttpEndPoint(endPoint, useHttps);
         }
 
         /// <summary>
