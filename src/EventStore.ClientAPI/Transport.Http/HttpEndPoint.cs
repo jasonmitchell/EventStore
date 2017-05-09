@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace EventStore.ClientAPI.Projections
+namespace EventStore.ClientAPI.Transport.Http
 {
     internal class HttpEndPoint
     {

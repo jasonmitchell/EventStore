@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using HttpStatusCode = EventStore.ClientAPI.Transport.Http.HttpStatusCode;
 using EventStore.ClientAPI.Common.Utils;
 using EventStore.ClientAPI.Exceptions;
+using EventStore.ClientAPI.Projections;
 using EventStore.ClientAPI.SystemData;
 using EventStore.ClientAPI.Transport.Http;
 
@@ -23,24 +23,24 @@ namespace EventStore.ClientAPI.UserManagement
             _client = new HttpAsyncClient(_operationTimeout);
         }
 
-        public Task Enable(IPEndPoint endPoint, string login, UserCredentials userCredentials = null)
+        public Task Enable(HttpEndPoint endPoint, string login, UserCredentials userCredentials = null)
         {
-            return SendPost(endPoint.ToHttpUrl("/users/{0}/command/enable", login), string.Empty, userCredentials, HttpStatusCode.OK);
+            return SendPost(endPoint.ToUrl("/users/{0}/command/enable", login), string.Empty, userCredentials, HttpStatusCode.OK);
         }
 
-        public Task Disable(IPEndPoint endPoint, string login, UserCredentials userCredentials = null)
+        public Task Disable(HttpEndPoint endPoint, string login, UserCredentials userCredentials = null)
         {
-            return SendPost(endPoint.ToHttpUrl("/users/{0}/command/disable", login), string.Empty, userCredentials, HttpStatusCode.OK);
+            return SendPost(endPoint.ToUrl("/users/{0}/command/disable", login), string.Empty, userCredentials, HttpStatusCode.OK);
         }
 
-        public Task Delete(IPEndPoint endPoint, string login, UserCredentials userCredentials = null)
+        public Task Delete(HttpEndPoint endPoint, string login, UserCredentials userCredentials = null)
         {
-            return SendDelete(endPoint.ToHttpUrl("/users/{0}", login), userCredentials, HttpStatusCode.OK);
+            return SendDelete(endPoint.ToUrl("/users/{0}", login), userCredentials, HttpStatusCode.OK);
         }
 
-        public Task<List<UserDetails>> ListAll(IPEndPoint endPoint, UserCredentials userCredentials = null)
+        public Task<List<UserDetails>> ListAll(HttpEndPoint endPoint, UserCredentials userCredentials = null)
         {
-            return SendGet(endPoint.ToHttpUrl("/users/"), userCredentials, HttpStatusCode.OK)
+            return SendGet(endPoint.ToUrl("/users/"), userCredentials, HttpStatusCode.OK)
                     .ContinueWith(x =>
                     {
                         if (x.IsFaulted) throw x.Exception;
@@ -49,9 +49,9 @@ namespace EventStore.ClientAPI.UserManagement
                     });
         }
 
-        public Task<UserDetails> GetCurrentUser(IPEndPoint endPoint, UserCredentials userCredentials = null)
+        public Task<UserDetails> GetCurrentUser(HttpEndPoint endPoint, UserCredentials userCredentials = null)
         {
-            return SendGet(endPoint.ToHttpUrl("/users/$current"), userCredentials, HttpStatusCode.OK)
+            return SendGet(endPoint.ToUrl("/users/$current"), userCredentials, HttpStatusCode.OK)
                 .ContinueWith(x =>
                 {
                     if (x.IsFaulted) throw x.Exception;
@@ -60,9 +60,9 @@ namespace EventStore.ClientAPI.UserManagement
                 });
         }
 
-        public Task<UserDetails> GetUser(IPEndPoint endPoint, string login, UserCredentials userCredentials = null)
+        public Task<UserDetails> GetUser(HttpEndPoint endPoint, string login, UserCredentials userCredentials = null)
         {
-            return SendGet(endPoint.ToHttpUrl("/users/{0}", login), userCredentials, HttpStatusCode.OK)
+            return SendGet(endPoint.ToUrl("/users/{0}", login), userCredentials, HttpStatusCode.OK)
                 .ContinueWith(x =>
                 {
                     if (x.IsFaulted) throw x.Exception;
@@ -71,29 +71,29 @@ namespace EventStore.ClientAPI.UserManagement
                 });
         }
 
-        public Task CreateUser(IPEndPoint endPoint, UserCreationInformation newUser,
+        public Task CreateUser(HttpEndPoint endPoint, UserCreationInformation newUser,
             UserCredentials userCredentials = null)
         {
             var userJson = newUser.ToJson();
-            return SendPost(endPoint.ToHttpUrl("/users/"), userJson, userCredentials, HttpStatusCode.Created);
+            return SendPost(endPoint.ToUrl("/users/"), userJson, userCredentials, HttpStatusCode.Created);
         }
 
-        public Task UpdateUser(IPEndPoint endPoint, string login, UserUpdateInformation updatedUser,
+        public Task UpdateUser(HttpEndPoint endPoint, string login, UserUpdateInformation updatedUser,
             UserCredentials userCredentials)
         {
-            return SendPut(endPoint.ToHttpUrl("/users/{0}", login), updatedUser.ToJson(), userCredentials, HttpStatusCode.OK);
+            return SendPut(endPoint.ToUrl("/users/{0}", login), updatedUser.ToJson(), userCredentials, HttpStatusCode.OK);
         }
 
-        public Task ChangePassword(IPEndPoint endPoint, string login, ChangePasswordDetails changePasswordDetails,
+        public Task ChangePassword(HttpEndPoint endPoint, string login, ChangePasswordDetails changePasswordDetails,
             UserCredentials userCredentials)
         {
-            return SendPost(endPoint.ToHttpUrl("/users/{0}/command/change-password", login), changePasswordDetails.ToJson(), userCredentials, HttpStatusCode.OK);
+            return SendPost(endPoint.ToUrl("/users/{0}/command/change-password", login), changePasswordDetails.ToJson(), userCredentials, HttpStatusCode.OK);
         }
 
-        public Task ResetPassword(IPEndPoint endPoint, string login, ResetPasswordDetails resetPasswordDetails,
+        public Task ResetPassword(HttpEndPoint endPoint, string login, ResetPasswordDetails resetPasswordDetails,
             UserCredentials userCredentials = null)
         {
-            return SendPost(endPoint.ToHttpUrl("/users/{0}/command/reset-password", login), resetPasswordDetails.ToJson(), userCredentials, HttpStatusCode.OK);
+            return SendPost(endPoint.ToUrl("/users/{0}/command/reset-password", login), resetPasswordDetails.ToJson(), userCredentials, HttpStatusCode.OK);
         }
 
         private Task<string> SendGet(string url, UserCredentials userCredentials, int expectedCode)

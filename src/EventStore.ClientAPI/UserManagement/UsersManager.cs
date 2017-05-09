@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using EventStore.ClientAPI.Common.Utils;
+using EventStore.ClientAPI.Projections;
 using EventStore.ClientAPI.SystemData;
+using EventStore.ClientAPI.Transport.Http;
 
 namespace EventStore.ClientAPI.UserManagement
 {
@@ -15,21 +17,22 @@ namespace EventStore.ClientAPI.UserManagement
     {
         private readonly UsersClient _client;
 
-        private readonly IPEndPoint _httpEndPoint;
+        private readonly HttpEndPoint _httpEndPoint;
 
         /// <summary>
         /// Creates a new instance of <see cref="UsersManager"/>.
         /// </summary>
         /// <param name="log">An instance of <see cref="ILogger"/> to use for logging.</param>
-        /// <param name="httpEndPoint">HTTP endpoint of an Event Store server.</param>
+        /// <param name="endPoint">HTTP endpoint of an Event Store server.</param>
         /// <param name="operationTimeout"></param>
-        public UsersManager(ILogger log, IPEndPoint httpEndPoint, TimeSpan operationTimeout)
+        /// <param name="useHttps">Whether to make requests over HTTPS.  Defaults to false.</param>
+        public UsersManager(ILogger log, IPEndPoint endPoint, TimeSpan operationTimeout, bool useHttps = false)
         {
             Ensure.NotNull(log, "log");
-            Ensure.NotNull(httpEndPoint, "httpEndPoint");
+            Ensure.NotNull(endPoint, "endPoint");
 
             _client = new UsersClient(log, operationTimeout);
-            _httpEndPoint = httpEndPoint;
+            _httpEndPoint = new HttpEndPoint(endPoint, useHttps);
         }
 
         /// <summary>

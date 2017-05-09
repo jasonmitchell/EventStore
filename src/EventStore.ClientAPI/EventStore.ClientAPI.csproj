@@ -91,7 +91,7 @@
     <Compile Include="PersistentSubscriptionNakEventAction.cs" />
     <Compile Include="PersistentSubscriptionSettings.cs" />
     <Compile Include="PersistentSubscriptionSettingsBuilder.cs" />
-    <Compile Include="Projections\HttpEndPoint.cs" />
+    <Compile Include="Transport.Http\HttpEndPoint.cs" />
     <Compile Include="Projections\ProjectionDetails.cs" />
     <Compile Include="StreamCheckpoint.cs" />
     <Compile Include="ClientAuthenticationFailedEventArgs.cs" />
