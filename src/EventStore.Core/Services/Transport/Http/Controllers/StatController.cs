@@ -28,6 +28,8 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
             service.RegisterAction(new ControllerAction("/stats", HttpMethod.Get, Codec.NoCodecs, SupportedCodecs), OnGetFreshStats);
             service.RegisterAction(new ControllerAction("/stats/replication", HttpMethod.Get, Codec.NoCodecs, SupportedCodecs), OnGetReplicationStats);
             service.RegisterAction(new ControllerAction("/stats/tcp", HttpMethod.Get, Codec.NoCodecs, SupportedCodecs), OnGetTcpConnectionStats);
+            service.RegisterAction(new ControllerAction("/stats/tcp/{connectionId}/command/enable-logging", HttpMethod.Post, Codec.NoCodecs, SupportedCodecs), OnTcpCommandEnableClientOperationLogging);
+            service.RegisterAction(new ControllerAction("/stats/tcp/{connectionId}/command/disable-logging", HttpMethod.Post, Codec.NoCodecs, SupportedCodecs), OnTcpCommandDisableClientOperationLogging);
             service.RegisterAction(new ControllerAction("/stats/{*statPath}", HttpMethod.Get, Codec.NoCodecs, SupportedCodecs), OnGetFreshStats);
         }
 
@@ -38,6 +40,16 @@ namespace EventStore.Core.Services.Transport.Http.Controllers
                                                   Format.GetFreshTcpConnectionStatsCompleted,
                                                   Configure.GetFreshTcpConnectionStatsCompleted);
             Publish(new MonitoringMessage.GetFreshTcpConnectionStats(envelope));
+        }
+
+        private void OnTcpCommandEnableClientOperationLogging(HttpEntityManager entity, UriTemplateMatch match)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnTcpCommandDisableClientOperationLogging(HttpEntityManager entity, UriTemplateMatch match)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnGetFreshStats(HttpEntityManager entity, UriTemplateMatch match)

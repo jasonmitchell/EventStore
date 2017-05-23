@@ -326,10 +326,15 @@ namespace EventStore.Core.Services.Transport.Tcp
                 error = ex.Message;
             }
             if (message != null)
+            {
+                if (_connection.LogClientOperations)
+                    Log.Debug("Client {0}: {1}", _clientConnectionName, message);
+
                 _publisher.Publish(message);
+            }
             else
                 SendBadRequest(package.CorrelationId,
-                                       string.Format("Could not unwrap network package for command {0}.\n{1}", package.Command, error));
+                               string.Format("Could not unwrap network package for command {0}.\n{1}", package.Command, error));
         }
 
         private void ReplyNotAuthenticated(Guid correlationId, string description)

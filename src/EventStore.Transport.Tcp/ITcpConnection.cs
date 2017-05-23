@@ -15,6 +15,7 @@ namespace EventStore.Transport.Tcp
         IPEndPoint LocalEndPoint { get; }
         int SendQueueSize { get; }
         bool IsClosed { get; }
+        bool LogClientOperations { get; }
 
         void ReceiveAsync(Action<ITcpConnection, IEnumerable<ArraySegment<byte>>> callback);
         void EnqueueSend(IEnumerable<ArraySegment<byte>> data);

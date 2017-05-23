@@ -51,12 +51,30 @@ namespace EventStore.Transport.Tcp
                 return stats;
             }
         }
-        
+
         public IMonitoredTcpConnection[] GetTcpConnectionStats()
         {
             GetTcpStats();
             var monitoredConnections = _connections.Values.Select(conn => conn.Connection).ToArray();
             return monitoredConnections;
+        }
+
+        internal void EnableClientOperationLogging(IMonitoredTcpConnection connection)
+        {
+            ConnectionData data;
+            if (_connections.TryGetValue(connection, out data))
+            {
+                data.LogClientOperations = true;
+            }
+        }
+
+        internal void DisableClientOperationLogging(IMonitoredTcpConnection connection)
+        {
+            ConnectionData data;
+            if (_connections.TryGetValue(connection, out data))
+            {
+                data.LogClientOperations = false;
+            }
         }
 
         private TcpStats AnalyzeConnections(ConnectionData[] connections, TimeSpan measurePeriod)
@@ -210,6 +228,7 @@ namespace EventStore.Transport.Tcp
             public bool LastMissingReceiveCallBack;
             public long LastTotalBytesSent;
             public long LastTotalBytesReceived;
+            public bool LogClientOperations = false;
 
             public ConnectionData(IMonitoredTcpConnection connection)
             {

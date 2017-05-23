@@ -239,5 +239,38 @@ namespace EventStore.Core.Messages
                 Stats = stats;
             }
         }
+
+        public class Command
+        {
+            public class EnableClientOperationLogging : Message
+            {
+                private static readonly int TypeId = System.Threading.Interlocked.Increment(ref NextMsgId);
+                public override int MsgTypeId { get { return TypeId; } }
+
+                public readonly IEnvelope Envelope;
+                public readonly Guid ConnectionId;
+
+                public EnableClientOperationLogging(IEnvelope envelope, Guid connectionId)
+                {
+                    Envelope = envelope;
+                    ConnectionId = connectionId;
+                }
+            }
+
+            public class DisableClientOperationLogging : Message
+            {
+                private static readonly int TypeId = System.Threading.Interlocked.Increment(ref NextMsgId);
+                public override int MsgTypeId { get { return TypeId; } }
+
+                public readonly IEnvelope Envelope;
+                public readonly Guid ConnectionId;
+
+                public DisableClientOperationLogging(IEnvelope envelope, Guid connectionId)
+                {
+                    Envelope = envelope;
+                    ConnectionId = connectionId;
+                }
+            }
+        }
     }
 }

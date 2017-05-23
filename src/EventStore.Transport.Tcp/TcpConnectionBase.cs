@@ -13,6 +13,7 @@ namespace EventStore.Transport.Tcp
 
         public bool IsInitialized { get { return _socket != null; } }
         public bool IsClosed { get { return _isClosed; } }
+        public bool LogClientOperations { get { return _logClientOperations; } }
         public bool InSend { get { return Interlocked.Read(ref _lastSendStarted) >= 0; } }
         public bool InReceive { get { return Interlocked.Read(ref _lastReceiveStarted) >= 0; } }
         public int PendingSendBytes { get { return _pendingSendBytes; } }
@@ -98,6 +99,7 @@ namespace EventStore.Transport.Tcp
         private long _lastSendStarted = -1;
         private long _lastReceiveStarted = -1;
         private bool _isClosed;
+        private bool _logClientOperations;
 
         private int _pendingSendBytes;
         private int _inSendBytes;
@@ -173,6 +175,18 @@ namespace EventStore.Transport.Tcp
         {
             _isClosed = true;
             TcpConnectionMonitor.Default.Unregister(this);
+        }
+
+        public void EnableClientOperationLogging()
+        {
+            _logClientOperations = true;
+            TcpConnectionMonitor.Default.EnableClientOperationLogging(this);
+        }
+
+        public void DisableClientOperationLogging()
+        {
+            _logClientOperations = false;
+            TcpConnectionMonitor.Default.DisableClientOperationLogging(this);
         }
     }
 }

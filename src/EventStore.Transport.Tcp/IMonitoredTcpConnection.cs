@@ -9,6 +9,7 @@ namespace EventStore.Transport.Tcp
         bool IsInitialized { get; } 
         bool IsFaulted { get; }
         bool IsClosed { get; }
+        bool LogClientOperations { get; }
 
         bool InSend { get; }
         bool InReceive { get; }

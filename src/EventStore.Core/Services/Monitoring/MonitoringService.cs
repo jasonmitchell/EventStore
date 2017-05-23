@@ -31,7 +31,9 @@ namespace EventStore.Core.Services.Monitoring
                                      IHandle<SystemMessage.BecomeShutdown>,
                                      IHandle<ClientMessage.WriteEventsCompleted>,
                                      IHandle<MonitoringMessage.GetFreshStats>,
-                                     IHandle<MonitoringMessage.GetFreshTcpConnectionStats>
+                                     IHandle<MonitoringMessage.GetFreshTcpConnectionStats>,
+                                     IHandle<MonitoringMessage.Command.EnableClientOperationLogging>,
+                                     IHandle<MonitoringMessage.Command.DisableClientOperationLogging>
     {
         private static readonly ILogger RegularLog = LogManager.GetLogger("REGULAR-STATS-LOGGER");
         private static readonly ILogger Log = LogManager.GetLoggerFor<MonitoringService>();
@@ -377,6 +379,16 @@ namespace EventStore.Core.Services.Monitoring
             }
             connections = _memoizedTcpConnections;
             return true;
+        }
+
+        public void Handle(MonitoringMessage.Command.EnableClientOperationLogging message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Handle(MonitoringMessage.Command.DisableClientOperationLogging message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

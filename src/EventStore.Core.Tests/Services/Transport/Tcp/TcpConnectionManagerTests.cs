@@ -99,6 +99,14 @@ namespace EventStore.Core.Tests.Services.Transport.Tcp
             }
         }
 
+        public bool LogClientOperations
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public IPEndPoint LocalEndPoint
         {
             get
