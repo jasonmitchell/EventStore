@@ -218,13 +218,13 @@ function scope($on, $notify) {
         return fromStreams(arr);
     }
 
-    function emit(streamId, eventName, eventBody, metadata) {
-        var message = { streamId: streamId, eventName: eventName , body: JSON.stringify(eventBody), metadata: metadata, isJson: true };
+    function emit(streamId, eventName, eventBody, metadata, streamMetadata) {
+        var message = { streamId: streamId, eventName: eventName , body: JSON.stringify(eventBody), metadata: metadata, streamMetadata: streamMetadata, isJson: true };
         eventProcessor.emit(message);
     }
 
-    function linkTo(streamId, event, metadata) {
-        var message = { streamId: streamId, eventName: "$>", body: event.sequenceNumber + "@" + event.streamId, metadata: metadata, isJson: false };
+    function linkTo(streamId, event, metadata, streamMetadata) {
+        var message = { streamId: streamId, eventName: "$>", body: event.sequenceNumber + "@" + event.streamId, metadata: metadata, streamMetadata: streamMetadata, isJson: false };
         eventProcessor.emit(message);
     }
 
